@@ -1,20 +1,16 @@
-import { task } from "@trigger.dev/sdk";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { NextResponse } from "next/server";
+import { runLLMTask } from "@/lib/trigger/llmTask";
 
-export const runLLMTask = task({
-  id: "run-llm-task",
+export async function POST(req: Request) {
+  const body = await req.json();
 
-  run: async (payload: { prompt: string }) => {
-    const genAI = new GoogleGenerativeAI(
-      process.env.GEMINI_API_KEY!
-    );
+  const handle = await runLLMTask.trigger({
+    prompt: body.prompt,
+  });
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-    });
+  const result = await handle.result();
 
-    const result = await model.generateContent(payload.prompt);
-
-    return result.response.text();
-  },
-});
+  return NextResponse.json({
+    output: result,
+  });
+}
