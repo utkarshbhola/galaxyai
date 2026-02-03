@@ -5,9 +5,7 @@ export async function POST(req: Request) {
   const body = await req.json();
 
   const result = await runLLMTask.triggerAndWait({
-    payload: {
-      prompt: body.prompt,
-    },
+    prompt: body.prompt,
   });
 
   return NextResponse.json({
